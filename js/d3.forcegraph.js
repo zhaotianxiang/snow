@@ -35,8 +35,10 @@ const data = {
   }]
 }
 
-const nodes = data.nodes;
-const links = data.mLinks.map(l => {
+let currentNodeId = null;
+
+let nodes = data.nodes;
+let links = data.mLinks.map(l => {
   l.source = getNodeByid(l.source);
   l.target = getNodeByid(l.target);
   return l;
@@ -152,8 +154,8 @@ function tick() {
     const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     const normX = deltaX / dist;
     const normY = deltaY / dist;
-    const sourcePadding = 12;
-    const targetPadding = 17;
+    const sourcePadding = 24;
+    const targetPadding = 27;
     const sourceX = d.source.x + (sourcePadding * normX);
     const sourceY = d.source.y + (sourcePadding * normY);
     const targetX = d.target.x - (targetPadding * normX);
@@ -213,6 +215,8 @@ function restart() {
       return d.label;
     });
 
+  console.log(nodes);
+  console.log(links);
   // circle (node) group
   // NB: the function arg is crucial here! nodes are known by id, not by index!
   circle = circle.data(nodes, (d) => d.id);
@@ -230,17 +234,15 @@ function restart() {
 
   g.append('svg:circle')
     .attr('class', 'node')
-    .attr('r', 12)
+    .attr('r', 24)
     .style('fill', (d) => (d === selectedNode) ? d3.rgb(colors(d.id)).brighter().toString() : colors(d.id))
     .style('stroke', (d) => d3.rgb(colors(d.id)).toString())
     // .classed('reflexive', (d) => d.reflexive)
     .on("dblclick", function(d) {
       console.log("双击了", d);
-      if ($) {
-        $("#myModal").modal()
-      } else {
-        throw new Error("$不存在")
-      }
+      $("#myModal").modal();
+      $("#txt_node_id").val(d.id);
+      currentNodeId = d.id;
     })
     .on('mouseover', function(d) {
       if (!mousedownNode || d === mousedownNode) return;
@@ -311,21 +313,16 @@ function restart() {
     .attr('x', 0)
     .attr('y', 4)
     .attr('class', 'id')
+    .attr('id', (d) => d.id)
     .text((d) => d.id);
 
   circle = g.merge(circle);
 
   // set the graph in motion
-  force
-    .nodes(nodes)
+  force.nodes(nodes)
     .force('link').links(links);
 
   force.alphaTarget(0.3).restart();
-}
-
-function addModal() {
-  // $('#addModal').modal('show');
-  console.log($('#addModal'));
 }
 
 function mousedown() {
@@ -424,6 +421,36 @@ function keyup() {
     circle.on('.drag', null);
     svg.classed('ctrl', false);
   }
+}
+
+$('#myModal').on('show.bs.modal', function(event) {
+  console.log("modal显示事件");
+});
+
+$('#myModal').on('hidden.bs.modal', function(event) {
+  console.log("modal隐藏事件");
+  restart();
+});
+
+$('#myModal').on('shown.bs.modal', function () {
+  $('#txt_node_id').trigger('focus')
+})
+
+// modal save data
+$('#btn_submit').click(function() {
+  let nodeId = $("input[name='txt_node_id']").val();
+  console.log(currentNodeId, nodeId);
+  let node = getNodeByid(currentNodeId);
+  node.id = nodeId;
+  updateNodeDisplay(node, currentNodeId);
+});
+
+function updateNodeDisplay(node, curr) {
+  $('#' + curr).val(node.id);
+  $('#' + curr).text(node.id);
+  $('#' + curr).html(node.id);
+  $('text#' + curr).attr('id', node.id);
+  restart();
 }
 
 // app starts here

@@ -29,7 +29,7 @@ svg:not(.active):not(.ctrl) path.link {
 }
 
 path.link.selected {
-  stroke-dasharray: 20,0;
+  stroke-dasharray: 50,0;
 }
 
 path.link.dragline {
@@ -41,7 +41,7 @@ path.link.hidden {
 }
 
 circle.node {
-  stroke-width: 10px;
+  stroke-width: 2px;
   cursor: pointer;
 }
 
@@ -51,7 +51,7 @@ circle.node.reflexive {
 }
 
 text {
-  font: 12px sans-serif;
+  font: 10px sans-serif;
   pointer-events: none;
 }
 

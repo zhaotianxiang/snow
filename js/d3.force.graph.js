@@ -27,11 +27,6 @@ const data = {
     source: "英语",
     target: "化学",
     label: "英语到化学",
-  }, {
-    id: 3,
-    source: "化学",
-    target: "生物",
-    label: "化学到生物"
   }]
 }
 
@@ -74,7 +69,7 @@ simulation.tick()：一個持續性刷新的 function 。對現在的圖表進�
 // init D3 force layout
 const force = d3.forceSimulation()
   .force('link', d3.forceLink().id((d) => d.id).distance(150))
-  .force('charge', d3.forceManyBody().strength(-500))
+  .force('charge', d3.forceManyBody().strength(-1000))
   .force('x', d3.forceX(width / 2))
   .force('y', d3.forceY(height / 2))
   .on('tick', tick);
